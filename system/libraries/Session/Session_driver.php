@@ -99,16 +99,8 @@ abstract class CI_Session_driver {
 	{
 		$this->_config =& $params;
 
-		if (is_php('7'))
-		{
-			$this->_success = TRUE;
-			$this->_failure = FALSE;
-		}
-		else
-		{
-			$this->_success = 0;
-			$this->_failure = -1;
-		}
+		$this->_success = TRUE;
+		$this->_failure = FALSE;
 	}
 
 	// ------------------------------------------------------------------------
@@ -140,17 +132,6 @@ abstract class CI_Session_driver {
 	 */
 	protected function _cookie_destroy()
 	{
-		if ( ! is_php('7.3'))
-		{
-			$header = 'Set-Cookie: '.$this->_config['cookie_name'].'=';
-			$header .= '; Expires='.gmdate('D, d-M-Y H:i:s T', 1).'; Max-Age=-1';
-			$header .= '; Path='.$this->_config['cookie_path'];
-			$header .= ($this->_config['cookie_domain'] !== '' ? '; Domain='.$this->_config['cookie_domain'] : '');
-			$header .= ($this->_config['cookie_secure'] ? '; Secure' : '').'; HttpOnly; SameSite='.$this->_config['cookie_samesite'];
-			header($header);
-			return;
-		}
-
 		return setcookie(
 			$this->_config['cookie_name'],
 			'',

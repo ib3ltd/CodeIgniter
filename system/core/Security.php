@@ -273,34 +273,18 @@ class CI_Security {
 			return FALSE;
 		}
 
-		if (is_php('7.3'))
-		{
-			setcookie(
-				$this->_csrf_cookie_name,
-				$this->_csrf_hash,
-				array(
-					'expires'  => $expire,
-					'path'     => config_item('cookie_path'),
-					'domain'   => config_item('cookie_domain'),
-					'secure'   => $secure_cookie,
-					'httponly' => config_item('cookie_httponly'),
-					'samesite' => 'Strict'
-				)
-			);
-		}
-		else
-		{
-			$domain = trim(config_item('cookie_domain'));
-			header('Set-Cookie: '.$this->_csrf_cookie_name.'='.$this->_csrf_hash
-					.'; Expires='.gmdate('D, d-M-Y H:i:s T', $expire)
-					.'; Max-Age='.$this->_csrf_expire
-					.'; Path='.implode('/', array_map('rawurlencode', explode('/', config_item('cookie_path'))))
-					.($domain === '' ? '' : '; Domain='.$domain)
-					.($secure_cookie ? '; Secure' : '')
-					.(config_item('cookie_httponly') ? '; HttpOnly' : '')
-					.'; SameSite=Strict'
-			);
-		}
+		setcookie(
+			$this->_csrf_cookie_name,
+			$this->_csrf_hash,
+			array(
+				'expires'  => $expire,
+				'path'     => config_item('cookie_path'),
+				'domain'   => config_item('cookie_domain'),
+				'secure'   => $secure_cookie,
+				'httponly' => config_item('cookie_httponly'),
+				'samesite' => 'Strict'
+			)
+		);
 
 		log_message('info', 'CSRF cookie sent');
 
@@ -659,7 +643,7 @@ class CI_Security {
 		if (is_readable('/dev/urandom') && ($fp = fopen('/dev/urandom', 'rb')) !== FALSE)
 		{
 			// Try not to waste entropy ...
-			is_php('5.4') && stream_set_chunk_size($fp, $length);
+			stream_set_chunk_size($fp, $length);
 			$output = fread($fp, $length);
 			fclose($fp);
 			if ($output !== FALSE)
@@ -705,9 +689,7 @@ class CI_Security {
 		static $_entities;
 
 		isset($charset) OR $charset = $this->charset;
-		$flag = is_php('5.4')
-			? ENT_COMPAT | ENT_HTML5
-			: ENT_COMPAT;
+		$flag = ENT_COMPAT | ENT_HTML5;
 
 		if ( ! isset($_entities))
 		{

@@ -423,22 +423,6 @@ class CI_Input {
 			log_message('error', $name.' cookie sent with SameSite=None, but without Secure attribute.');
 		}
 
-		if ( ! is_php('7.3'))
-		{
-			$maxage = $expire - time();
-			if ($maxage < 1)
-			{
-				$maxage = 0;
-			}
-
-			$cookie_header = 'Set-Cookie: '.$prefix.$name.'='.rawurlencode($value);
-			$cookie_header .= ($expire === 0 ? '' : '; Expires='.gmdate('D, d-M-Y H:i:s T', $expire)).'; Max-Age='.$maxage;
-			$cookie_header .= '; Path='.$path.($domain !== '' ? '; Domain='.$domain : '');
-			$cookie_header .= ($secure ? '; Secure' : '').($httponly ? '; HttpOnly' : '').'; SameSite='.$samesite;
-			header($cookie_header);
-			return;
-		}
-
 		$setcookie_options = array(
 			'expires' => $expire,
 			'path' => $path,
@@ -717,16 +701,6 @@ class CI_Input {
 				$new_array[$this->_clean_input_keys($key)] = $this->_clean_input_data($str[$key]);
 			}
 			return $new_array;
-		}
-
-		/* We strip slashes if magic quotes is on to keep things consistent
-
-		   NOTE: In PHP 5.4 get_magic_quotes_gpc() will always return 0 and
-		         it will probably not exist in future versions at all.
-		*/
-		if ( ! is_php('5.4') && get_magic_quotes_gpc())
-		{
-			$str = stripslashes($str);
 		}
 
 		// Clean UTF-8 if supported

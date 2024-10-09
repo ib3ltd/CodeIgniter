@@ -83,56 +83,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 /*
  * ------------------------------------------------------
- * Security procedures
- * ------------------------------------------------------
- */
-
-if ( ! is_php('5.4'))
-{
-	ini_set('magic_quotes_runtime', 0);
-
-	if ((bool) ini_get('register_globals'))
-	{
-		$_protected = array(
-			'_SERVER',
-			'_GET',
-			'_POST',
-			'_FILES',
-			'_REQUEST',
-			'_SESSION',
-			'_ENV',
-			'_COOKIE',
-			'GLOBALS',
-			'HTTP_RAW_POST_DATA',
-			'system_path',
-			'application_folder',
-			'view_folder',
-			'_protected',
-			'_registered'
-		);
-
-		$_registered = ini_get('variables_order');
-		foreach (array('E' => '_ENV', 'G' => '_GET', 'P' => '_POST', 'C' => '_COOKIE', 'S' => '_SERVER') as $key => $superglobal)
-		{
-			if (strpos($_registered, $key) === FALSE)
-			{
-				continue;
-			}
-
-			foreach (array_keys($$superglobal) as $var)
-			{
-				if (isset($GLOBALS[$var]) && ! in_array($var, $_protected, TRUE))
-				{
-					$GLOBALS[$var] = NULL;
-				}
-			}
-		}
-	}
-}
-
-
-/*
- * ------------------------------------------------------
  *  Define a custom error handler so we can log PHP errors
  * ------------------------------------------------------
  */
@@ -274,10 +224,7 @@ if ( ! is_php('5.4'))
 		define('ICONV_ENABLED', FALSE);
 	}
 
-	if (is_php('5.6'))
-	{
-		ini_set('php.internal_encoding', $charset);
-	}
+	ini_set('php.internal_encoding', $charset);
 
 /*
  * ------------------------------------------------------
@@ -286,9 +233,6 @@ if ( ! is_php('5.4'))
  */
 
 	require_once(BASEPATH.'core/compat/mbstring.php');
-	require_once(BASEPATH.'core/compat/hash.php');
-	require_once(BASEPATH.'core/compat/password.php');
-	require_once(BASEPATH.'core/compat/standard.php');
 
 /*
  * ------------------------------------------------------

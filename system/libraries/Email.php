@@ -396,7 +396,6 @@ class CI_Email {
 	{
 		$this->charset = config_item('charset');
 		$this->initialize($config);
-		$this->_safe_mode = ( ! is_php('5.4') && ini_get('safe_mode'));
 
 		isset(self::$func_overload) OR self::$func_overload = ( ! is_php('8.0') && extension_loaded('mbstring') && @ini_get('mbstring.func_overload'));
 
@@ -676,17 +675,6 @@ class CI_Email {
 	public function message($body)
 	{
 		$this->_body = rtrim(str_replace("\r", '', $body));
-
-		/* strip slashes only if magic quotes is ON
-		   if we do it with magic quotes OFF, it strips real, user-inputted chars.
-
-		   NOTE: In PHP 5.4 get_magic_quotes_gpc() will always return 0 and
-			 it will probably not exist in future versions at all.
-		*/
-		if ( ! is_php('5.4') && get_magic_quotes_gpc())
-		{
-			$this->_body = stripslashes($this->_body);
-		}
 
 		return $this;
 	}
@@ -2083,18 +2071,7 @@ class CI_Email {
 			$this->_send_command('hello');
 			$this->_send_command('starttls');
 
-			/**
-			 * STREAM_CRYPTO_METHOD_TLS_CLIENT is quite the mess ...
-			 *
-			 * - On PHP <5.6 it doesn't even mean TLS, but SSL 2.0, and there's no option to use actual TLS
-			 * - On PHP 5.6.0-5.6.6, >=7.2 it means negotiation with any of TLS 1.0, 1.1, 1.2
-			 * - On PHP 5.6.7-7.1.* it means only TLS 1.0
-			 *
-			 * We want the negotiation, so we'll force it below ...
-			 */
-			$method = is_php('5.6')
-				? STREAM_CRYPTO_METHOD_TLSv1_0_CLIENT | STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT | STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT
-				: STREAM_CRYPTO_METHOD_TLS_CLIENT;
+			$method = STREAM_CRYPTO_METHOD_TLSv1_0_CLIENT | STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT | STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT;
 			$crypto = stream_socket_enable_crypto($this->_smtp_connect, TRUE, $method);
 
 			if ($crypto !== TRUE)
