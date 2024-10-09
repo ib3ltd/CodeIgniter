@@ -15,10 +15,46 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: [ '8.2', '8.1', '8.0', '7.4', '7.3', '7.2', '7.1', '7.0', '5.6', '5.5', '5.4']
+        php: [ '8.4', '8.3', '8.2', '8.1', '8.0', '7.4']
         DB: [ 'pdo/mysql', 'pdo/pgsql', 'pdo/sqlite', 'mysqli', 'pgsql', 'sqlite' ]
         compiler: [ default ]
         include:
+          - php: '8.4'
+            DB: 'pdo/mysql'
+            compiler: jit
+          - php: '8.4'
+            DB: 'pdo/pgsql'
+            compiler: jit
+          - php: '8.4'
+            DB: 'pdo/sqlite'
+            compiler: jit
+          - php: '8.4'
+            DB: 'mysqli'
+            compiler: jit
+          - php: '8.4'
+            DB: 'pgsql'
+            compiler: jit
+          - php: '8.4'
+            DB: 'sqlite'
+            compiler: jit
+          - php: '8.3'
+            DB: 'pdo/mysql'
+            compiler: jit
+          - php: '8.3'
+            DB: 'pdo/pgsql'
+            compiler: jit
+          - php: '8.3'
+            DB: 'pdo/sqlite'
+            compiler: jit
+          - php: '8.3'
+            DB: 'mysqli'
+            compiler: jit
+          - php: '8.3'
+            DB: 'pgsql'
+            compiler: jit
+          - php: '8.3'
+            DB: 'sqlite'
+            compiler: jit
           - php: '8.2'
             DB: 'pdo/mysql'
             compiler: jit
@@ -73,15 +109,6 @@ jobs:
           - php: '8.0'
             DB: 'sqlite'
             compiler: jit
-          - php: '5.6'
-            DB: 'mysql'
-            compiler: default
-          - php: '5.5'
-            DB: 'mysql'
-            compiler: default
-          - php: '5.4'
-            DB: 'mysql'
-            compiler: default
 
     services:
       postgres:
