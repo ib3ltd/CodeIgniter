@@ -105,23 +105,8 @@ class CI_Session {
 
 		$class   = new $class($this->_config);
 		$wrapper = new CI_SessionWrapper($class);
-		if (is_php('5.4'))
-		{
-			session_set_save_handler($wrapper, TRUE);
-		}
-		else
-		{
-			session_set_save_handler(
-				array($wrapper, 'open'),
-				array($wrapper, 'close'),
-				array($wrapper, 'read'),
-				array($wrapper, 'write'),
-				array($wrapper, 'destroy'),
-				array($wrapper, 'gc')
-			);
 
-			register_shutdown_function('session_write_close');
-		}
+		session_set_save_handler($wrapper, TRUE);
 
 		// Sanitize the cookie, because apparently PHP doesn't do that for userspace handlers
 		if (isset($_COOKIE[$this->_config['cookie_name']])
@@ -155,30 +140,19 @@ class CI_Session {
 		elseif (isset($_COOKIE[$this->_config['cookie_name']]) && $_COOKIE[$this->_config['cookie_name']] === session_id())
 		{
 			$expires = empty($this->_config['cookie_lifetime']) ? 0 : time() + $this->_config['cookie_lifetime'];
-			if (is_php('7.3'))
-			{
-				setcookie(
-					$this->_config['cookie_name'],
-					session_id(),
-					array(
-						'expires' => $expires,
-						'path' => $this->_config['cookie_path'],
-						'domain' => $this->_config['cookie_domain'],
-						'secure' => $this->_config['cookie_secure'],
-						'httponly' => TRUE,
-						'samesite' => $this->_config['cookie_samesite']
-					)
-				);
-			}
-			else
-			{
-				$header = 'Set-Cookie: '.$this->_config['cookie_name'].'='.session_id();
-				$header .= empty($expires) ? '' : '; Expires='.gmdate('D, d-M-Y H:i:s T', $expires).'; Max-Age='.$this->_config['cookie_lifetime'];
-				$header .= '; Path='.$this->_config['cookie_path'];
-				$header .= ($this->_config['cookie_domain'] !== '' ? '; Domain='.$this->_config['cookie_domain'] : '');
-				$header .= ($this->_config['cookie_secure'] ? '; Secure' : '').'; HttpOnly; SameSite='.$this->_config['cookie_samesite'];
-				header($header);
-			}
+
+			setcookie(
+				$this->_config['cookie_name'],
+				session_id(),
+				array(
+					'expires' => $expires,
+					'path' => $this->_config['cookie_path'],
+					'domain' => $this->_config['cookie_domain'],
+					'secure' => $this->_config['cookie_secure'],
+					'httponly' => TRUE,
+					'samesite' => $this->_config['cookie_samesite']
+				)
+			);
 
 			if ( ! $this->_config['cookie_secure'] && $this->_config['cookie_samesite'] === 'None')
 			{
@@ -308,7 +282,7 @@ class CI_Session {
 		isset($params['cookie_secure']) OR $params['cookie_secure'] = (bool) config_item('cookie_secure');
 
 		isset($params['cookie_samesite']) OR $params['cookie_samesite'] = config_item('sess_samesite');
-		if ( ! isset($params['cookie_samesite']) && is_php('7.3'))
+		if ( ! isset($params['cookie_samesite']))
 		{
 			$params['cookie_samesite'] = ini_get('session.cookie_samesite');
 		}
@@ -323,27 +297,14 @@ class CI_Session {
 			$params['cookie_samesite'] = 'Lax';
 		}
 
-		if (is_php('7.3'))
-		{
-			session_set_cookie_params(array(
-				'lifetime' => $params['cookie_lifetime'],
-				'path'     => $params['cookie_path'],
-				'domain'   => $params['cookie_domain'],
-				'secure'   => $params['cookie_secure'],
-				'httponly' => TRUE,
-				'samesite' => $params['cookie_samesite']
-			));
-		}
-		else
-		{
-			session_set_cookie_params(
-				$params['cookie_lifetime'],
-				$params['cookie_path'].'; SameSite='.$params['cookie_samesite'],
-				$params['cookie_domain'],
-				$params['cookie_secure'],
-				TRUE // HttpOnly; Yes, this is intentional and not configurable for security reasons
-			);
-		}
+		session_set_cookie_params(array(
+			'lifetime' => $params['cookie_lifetime'],
+			'path'     => $params['cookie_path'],
+			'domain'   => $params['cookie_domain'],
+			'secure'   => $params['cookie_secure'],
+			'httponly' => TRUE,
+			'samesite' => $params['cookie_samesite']
+		));
 
 		if (empty($expiration))
 		{
