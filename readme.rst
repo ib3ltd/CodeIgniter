@@ -1,3 +1,24 @@
+##########
+Disclaimer
+##########
+
+This is a fork of CodeIgniter 3 maintained for use at ib3 Limited, focusing on
+compatibility with modern PHP versions.
+
+The main purpose is to ensure our legacy CodeIgniter applications continue to work
+with current PHP releases.
+
+-  ⚠️ This is **not an official CodeIgniter release**.
+-  🧑‍💻 It is **maintained by ib3 Limited** (https://ib3.co.uk).
+-  🚫 It is **not affiliated with the CodeIgniter project or the CodeIgniter Foundation** in any way.
+-  📦 It is **not available via Composer**.
+-  🛑 It is **limited to compatibility fixes** - no new features are being added.
+-  🔄 **Version requirements and compatibility may change at any time without notice.**
+-  ❌ I don’t provide support, accept issues, or review pull requests.
+-  🔍 If you’re looking for a maintained public fork, there are **other community versions** available on GitHub.
+
+Use this repository **at your own risk**.
+
 ###################
 What is CodeIgniter
 ###################
