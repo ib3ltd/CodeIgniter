@@ -840,10 +840,6 @@ class CI_Image_lib {
 			return FALSE;
 		}
 
-		// Kill the file handles
-		imagedestroy($dst_img);
-		imagedestroy($src_img);
-
 		if ($this->dynamic_output !== TRUE)
 		{
 			chmod($this->full_dst_path, $this->file_permissions);
@@ -1045,10 +1041,6 @@ class CI_Image_lib {
 			return FALSE;
 		}
 
-		// Kill the file handles
-		imagedestroy($dst_img);
-		imagedestroy($src_img);
-
 		chmod($this->full_dst_path, $this->file_permissions);
 
 		return TRUE;
@@ -1123,9 +1115,6 @@ class CI_Image_lib {
 		{
 			return FALSE;
 		}
-
-		// Kill the file handles
-		imagedestroy($src_img);
 
 		chmod($this->full_dst_path, $this->file_permissions);
 
@@ -1254,9 +1243,6 @@ class CI_Image_lib {
 		{
 			return FALSE;
 		}
-
-		imagedestroy($src_img);
-		imagedestroy($wm_img);
 
 		return TRUE;
 	}
@@ -1425,8 +1411,6 @@ class CI_Image_lib {
 		{
 			$this->image_save_gd($src_img);
 		}
-
-		imagedestroy($src_img);
 
 		return TRUE;
 	}

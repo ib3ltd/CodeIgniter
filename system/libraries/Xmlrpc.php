@@ -1185,10 +1185,8 @@ class XML_RPC_Message extends CI_Xmlrpc
 						xml_get_current_line_number($parser));
 
 			$r = new XML_RPC_Response(0, $this->xmlrpcerr['invalid_return'], $this->xmlrpcstr['invalid_return']);
-			xml_parser_free($parser);
 			return $r;
 		}
-		xml_parser_free($parser);
 
 		// Got ourselves some badness, it seems
 		if ($this->xh['isf'] > 1)
