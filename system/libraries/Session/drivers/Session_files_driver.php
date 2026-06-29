@@ -89,7 +89,7 @@ class CI_Session_files_driver extends CI_Session_driver implements CI_Session_dr
 	 *
 	 * @var	bool
 	 */
-	protected static $func_overload;
+	protected static $func_overload = FALSE;
 
 	// ------------------------------------------------------------------------
 
@@ -116,7 +116,6 @@ class CI_Session_files_driver extends CI_Session_driver implements CI_Session_dr
 
 		$this->_sid_regexp = $this->_config['_sid_regexp'];
 
-		isset(self::$func_overload) OR self::$func_overload = ( ! is_php('8.0') && extension_loaded('mbstring') && @ini_get('mbstring.func_overload'));
 	}
 
 	// ------------------------------------------------------------------------

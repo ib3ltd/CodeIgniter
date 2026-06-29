@@ -37,9 +37,9 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
- * PHP8SessionWrapper
+ * SessionWrapper
  *
- * PHP 8 Session handler compatibility wrapper
+ * Session handler wrapper
  *
  * @package	CodeIgniter
  * @subpackage	Libraries

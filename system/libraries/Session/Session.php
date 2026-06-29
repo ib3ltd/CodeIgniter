@@ -179,14 +179,8 @@ class CI_Session {
 	 */
 	protected function _ci_load_classes($driver)
 	{
-		// PHP 5.4 compatibility
-		interface_exists('SessionHandlerInterface', FALSE) OR require_once(BASEPATH.'libraries/Session/SessionHandlerInterface.php');
-		// PHP 7 compatibility
-		interface_exists('SessionUpdateTimestampHandlerInterface', FALSE) OR require_once(BASEPATH.'libraries/Session/SessionUpdateTimestampHandlerInterface.php');
-
 		require_once(BASEPATH.'libraries/Session/CI_Session_driver_interface.php');
-		$wrapper = is_php('8.0') ? 'PHP8SessionWrapper' : 'OldSessionWrapper';
-		require_once(BASEPATH.'libraries/Session/'.$wrapper.'.php');
+		require_once(BASEPATH.'libraries/Session/SessionWrapper.php');
 
 		$prefix = config_item('subclass_prefix');
 
@@ -340,18 +334,6 @@ class CI_Session {
 	 */
 	protected function _configure_sid_length()
 	{
-		if (! is_php('8.4')) {
-			// We force the PHP defaults.
-			$bits_per_character = (int) ini_get('session.sid_bits_per_character');
-			$sid_length         = (int) ini_get('session.sid_length');
-			if ($bits_per_character !== 4) {
-				ini_set('session.sid_bits_per_character', '4');
-			}
-			if ($sid_length !== 32) {
-				ini_set('session.sid_length', '32');
-			}
-		}
-
 		$this->_sid_regexp = '[0-9a-f]{32}';
 	}
 

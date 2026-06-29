@@ -380,7 +380,7 @@ class CI_Email {
 	 *
 	 * @var	bool
 	 */
-	protected static $func_overload;
+	protected static $func_overload = FALSE;
 
 	// --------------------------------------------------------------------
 
@@ -396,8 +396,6 @@ class CI_Email {
 	{
 		$this->charset = config_item('charset');
 		$this->initialize($config);
-
-		isset(self::$func_overload) OR self::$func_overload = ( ! is_php('8.0') && extension_loaded('mbstring') && @ini_get('mbstring.func_overload'));
 
 		log_message('info', 'Email Class Initialized');
 	}

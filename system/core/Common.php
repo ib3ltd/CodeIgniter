@@ -82,8 +82,7 @@ if ( ! function_exists('is_really_writable'))
 	 * Tests for file writability
 	 *
 	 * is_writable() returns TRUE on Windows servers when you really can't write to
-	 * the file, based on the read-only attribute. is_writable() is also unreliable
-	 * on Unix servers if safe_mode is on.
+	 * the file, based on the read-only attribute.
 	 *
 	 * @link	https://bugs.php.net/bug.php?id=54709
 	 * @param	string
@@ -91,14 +90,13 @@ if ( ! function_exists('is_really_writable'))
 	 */
 	function is_really_writable($file)
 	{
-		// If we're on a Unix server with safe_mode off we call is_writable
-		if (DIRECTORY_SEPARATOR === '/' && (is_php('5.4') OR ! ini_get('safe_mode')))
+		// If we're on a Unix server we call is_writable
+		if (DIRECTORY_SEPARATOR === '/')
 		{
 			return is_writable($file);
 		}
 
-		/* For Windows servers and safe_mode "on" installations we'll actually
-		 * write a file then read it. Bah...
+		/* For Windows servers we'll actually write a file then read it. Bah...
 		 */
 		if (is_dir($file))
 		{
