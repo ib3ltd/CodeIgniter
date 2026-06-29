@@ -139,9 +139,7 @@ if ( ! function_exists('ascii_to_entities'))
 	function ascii_to_entities($str)
 	{
 		$out = '';
-		$length = defined('MB_OVERLOAD_STRING')
-			? mb_strlen($str, '8bit') - 1
-			: strlen($str) - 1;
+		$length = strlen($str) - 1;
 		for ($i = 0, $count = 1, $temp = array(); $i <= $length; $i++)
 		{
 			$ordinal = ord($str[$i]);

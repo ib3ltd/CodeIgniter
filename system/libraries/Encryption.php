@@ -135,13 +135,6 @@ class CI_Encryption {
 		'sha512' => 64
 	);
 
-	/**
-	 * mbstring.func_overload flag
-	 *
-	 * @var	bool
-	 */
-	protected static $func_overload = FALSE;
-
 	// --------------------------------------------------------------------
 
 	/**
@@ -164,7 +157,7 @@ class CI_Encryption {
 
 		$this->initialize($params);
 
-		if ( ! isset($this->_key) && self::strlen($key = config_item('encryption_key')) > 0)
+		if ( ! isset($this->_key) && strlen($key = config_item('encryption_key')) > 0)
 		{
 			$this->_key = $key;
 		}
@@ -375,7 +368,7 @@ class CI_Encryption {
 			return FALSE;
 		}
 
-		isset($params['key']) OR $params['key'] = $this->hkdf($this->_key, 'sha512', NULL, self::strlen($this->_key), 'encryption');
+		isset($params['key']) OR $params['key'] = $this->hkdf($this->_key, 'sha512', NULL, strlen($this->_key), 'encryption');
 
 		if (($data = $this->{'_'.$this->_driver.'_encrypt'}($data, $params)) === FALSE)
 		{
@@ -430,7 +423,7 @@ class CI_Encryption {
 		if (in_array(strtolower(mcrypt_enc_get_modes_name($params['handle'])), array('cbc', 'ecb'), TRUE))
 		{
 			$block_size = mcrypt_enc_get_block_size($params['handle']);
-			$pad = $block_size - (self::strlen($data) % $block_size);
+			$pad = $block_size - (strlen($data) % $block_size);
 			$data .= str_repeat(chr($pad), $pad);
 		}
 
@@ -518,13 +511,13 @@ class CI_Encryption {
 				? $this->_digests[$params['hmac_digest']] * 2
 				: $this->_digests[$params['hmac_digest']];
 
-			if (self::strlen($data) <= $digest_size)
+			if (strlen($data) <= $digest_size)
 			{
 				return FALSE;
 			}
 
-			$hmac_input = self::substr($data, 0, $digest_size);
-			$data = self::substr($data, $digest_size);
+			$hmac_input = substr($data, 0, $digest_size);
+			$data = substr($data, $digest_size);
 
 			isset($params['hmac_key']) OR $params['hmac_key'] = $this->hkdf($this->_key, 'sha512', NULL, NULL, 'authentication');
 			$hmac_check = hash_hmac($params['hmac_digest'], $data, $params['hmac_key'], ! $params['base64']);
@@ -547,7 +540,7 @@ class CI_Encryption {
 			$data = base64_decode($data);
 		}
 
-		isset($params['key']) OR $params['key'] = $this->hkdf($this->_key, 'sha512', NULL, self::strlen($this->_key), 'encryption');
+		isset($params['key']) OR $params['key'] = $this->hkdf($this->_key, 'sha512', NULL, strlen($this->_key), 'encryption');
 
 		return $this->{'_'.$this->_driver.'_decrypt'}($data, $params);
 	}
@@ -574,8 +567,8 @@ class CI_Encryption {
 		{
 			if (mcrypt_enc_get_modes_name($params['handle']) !== 'ECB')
 			{
-				$iv = self::substr($data, 0, $iv_size);
-				$data = self::substr($data, $iv_size);
+				$iv = substr($data, 0, $iv_size);
+				$data = substr($data, $iv_size);
 			}
 			else
 			{
@@ -602,7 +595,7 @@ class CI_Encryption {
 		// Remove PKCS#7 padding, if necessary
 		if (in_array(strtolower(mcrypt_enc_get_modes_name($params['handle'])), array('cbc', 'ecb'), TRUE))
 		{
-			$data = self::substr($data, 0, -ord($data[self::strlen($data)-1]));
+			$data = substr($data, 0, -ord($data[strlen($data)-1]));
 		}
 
 		mcrypt_generic_deinit($params['handle']);
@@ -627,8 +620,8 @@ class CI_Encryption {
 	{
 		if ($iv_size = openssl_cipher_iv_length($params['handle']))
 		{
-			$iv = self::substr($data, 0, $iv_size);
-			$data = self::substr($data, $iv_size);
+			$iv = substr($data, 0, $iv_size);
+			$data = substr($data, $iv_size);
 		}
 		else
 		{
@@ -863,17 +856,17 @@ class CI_Encryption {
 			return FALSE;
 		}
 
-		self::strlen($salt) OR $salt = str_repeat("\0", $this->_digests[$digest]);
+		strlen($salt) OR $salt = str_repeat("\0", $this->_digests[$digest]);
 
 		$prk = hash_hmac($digest, $key, $salt, TRUE);
 		$key = '';
-		for ($key_block = '', $block_index = 1; self::strlen($key) < $length; $block_index++)
+		for ($key_block = '', $block_index = 1; strlen($key) < $length; $block_index++)
 		{
 			$key_block = hash_hmac($digest, $key_block.$info.chr($block_index), $prk, TRUE);
 			$key .= $key_block;
 		}
 
-		return self::substr($key, 0, $length);
+		return substr($key, 0, $length);
 	}
 
 	// --------------------------------------------------------------------
@@ -897,45 +890,5 @@ class CI_Encryption {
 		}
 
 		return NULL;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Byte-safe strlen()
-	 *
-	 * @param	string	$str
-	 * @return	int
-	 */
-	protected static function strlen($str)
-	{
-		return (self::$func_overload)
-			? mb_strlen((string) $str, '8bit')
-			: strlen((string) $str);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Byte-safe substr()
-	 *
-	 * @param	string	$str
-	 * @param	int	$start
-	 * @param	int	$length
-	 * @return	string
-	 */
-	protected static function substr($str, $start, $length = NULL)
-	{
-		if (self::$func_overload)
-		{
-			// mb_substr($str, $start, null, '8bit') returns an empty
-			// string on PHP 5.3
-			isset($length) OR $length = ($start >= 0 ? self::strlen($str) - $start : -$start);
-			return mb_substr($str, $start, $length, '8bit');
-		}
-
-		return isset($length)
-			? substr($str, $start, $length)
-			: substr($str, $start);
 	}
 }

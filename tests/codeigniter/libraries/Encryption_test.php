@@ -97,18 +97,14 @@ class Encryption_test extends CI_TestCase {
 		$hkdf_result = $this->encryption->hkdf('foobar', 'sha512');
 		$this->assertEquals(
 			64,
-			defined('MB_OVERLOAD_STRING')
-				? mb_strlen($hkdf_result, '8bit')
-				: strlen($hkdf_result)
+			strlen($hkdf_result)
 		);
 
 		// Test maximum length (RFC5869 says that it must be up to 255 times the digest size)
 		$hkdf_result = $this->encryption->hkdf('foobar', 'sha384', NULL, 48 * 255);
 		$this->assertEquals(
 			12240,
-			defined('MB_OVERLOAD_STRING')
-				? mb_strlen($hkdf_result, '8bit')
-				: strlen($hkdf_result)
+			strlen($hkdf_result)
 		);
 		$this->assertFalse($this->encryption->hkdf('foobar', 'sha224', NULL, 28 * 255 + 1));
 

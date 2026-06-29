@@ -84,13 +84,6 @@ class CI_Session_files_driver extends CI_Session_driver implements CI_Session_dr
 	 */
 	protected $_sid_regexp;
 
-	/**
-	 * mbstring.func_overload flag
-	 *
-	 * @var	bool
-	 */
-	protected static $func_overload = FALSE;
-
 	// ------------------------------------------------------------------------
 
 	/**
@@ -213,7 +206,7 @@ class CI_Session_files_driver extends CI_Session_driver implements CI_Session_dr
 		}
 
 		$session_data = '';
-		for ($read = 0, $length = filesize($this->_file_path.$session_id); $read < $length; $read += self::strlen($buffer))
+		for ($read = 0, $length = filesize($this->_file_path.$session_id); $read < $length; $read += strlen($buffer))
 		{
 			if (($buffer = fread($this->_file_handle, $length - $read)) === FALSE)
 			{
@@ -429,20 +422,5 @@ class CI_Session_files_driver extends CI_Session_driver implements CI_Session_dr
 		$result = is_file($this->_file_path.$id);
 		clearstatcache(TRUE, $this->_file_path.$id);
 		return $result;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Byte-safe strlen()
-	 *
-	 * @param	string	$str
-	 * @return	int
-	 */
-	protected static function strlen($str)
-	{
-		return (self::$func_overload)
-			? mb_strlen($str, '8bit')
-			: strlen($str);
 	}
 }
