@@ -47,7 +47,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @author	Andrey Andreev
  * @link	https://codeigniter.com/userguide3/libraries/sessions.html
  */
-class CI_SessionWrapper implements SessionHandlerInterface, SessionUpdateTimestampHandlerInterface {
+class CI_SessionWrapper implements SessionHandlerInterface, SessionIdInterface, SessionUpdateTimestampHandlerInterface {
 
 	protected CI_Session_driver_interface $driver;
 
@@ -86,6 +86,11 @@ class CI_SessionWrapper implements SessionHandlerInterface, SessionUpdateTimesta
 	public function gc(int $maxlifetime): mixed
 	{
 		return $this->driver->gc($maxlifetime);
+	}
+
+	public function create_sid(): string
+	{
+		return session_create_id() ?: throw new Exception('Unable to create a session ID.');
 	}
 
 	public function updateTimestamp(string $id, string$data): bool
